@@ -28,6 +28,12 @@ type TaskStateType = {
     [todoListId: string]: TasklistsType
 }
 
+class AddItemForm extends React.Component<{ addItem: any }> {
+    render() {
+        return null;
+    }
+}
+
 function App() {
     const todolist_1: string = v1()
     const todolist_2: string = v1()
@@ -75,11 +81,7 @@ function App() {
             title: title,
             isDone: false
         }
-        // const tasksForUpdate = tasks[todoListId]
-        // const updatedTasks = [newTask, ...tasksForUpdate]
-        // const copyTasks = {...tasks}
-        // copyTasks[todoListId] = updatedTasks
-        // setTasks(copyTasks)
+
 
         setTasks({...tasks, [todoListId]: {...tasks[todoListId], data: [...tasks[todoListId].data, newTask]}})
     }
@@ -95,9 +97,26 @@ function App() {
 
     }
 
+    const changeTaskTitle = (taskId: string, title: string, todolistId: string) => {
+        setTasks({
+            ...tasks,
+            [todolistId]: {
+                ...tasks[todolistId],
+                data: tasks[todolistId].data.map(t => t.id === taskId ? {...t, title: title} : t)
+            }
+        })
+
+    }
+
+
     const changeTodoListFilter = (value: FilterValuesType, todolistId: string) => {
         // setTodolists(todolists.map(tl => tl.id === todolistId ? {...tl, filter: value} : tl))
         setTasks({...tasks,[todolistId]:{...tasks[todolistId], filter:value}})
+
+    }
+
+    const changeTodoListTitle = (title:string, todolistId: string) => {
+        setTodolists(todolists.map(tl => tl.id === todolistId ? {...tl, title: title} : tl))
 
     }
 
@@ -107,6 +126,18 @@ function App() {
         delete copyTasks[todoListId]
         setTasks(copyTasks)
     }
+
+    const addTodolist = (title: string) => {
+        const newTodolistId = v1()
+        const newTodolist : TodolistType = {
+            id: newTodolistId,
+            title: title,
+            filter: 'all'
+        }
+        setTodolists([...todolists, newTodolist])
+        setTasks({...tasks, [newTodolistId]: {data:[], filter: "all"}})
+    }
+
 
 
     const getFilteredTasksForRender = (tasks: Array<TaskType>, filter: FilterValuesType): Array<TaskType> => {
@@ -135,7 +166,9 @@ function App() {
                 removeTask={removeTask}
                 removeTodoList={removeTodolist}
                 changeTaskStatus={changeTaskStatus}
+                changeTaskTitle={changeTaskTitle}
                 changeTodoListFilter={changeTodoListFilter}
+                changeTodolistTitle={changeTodoListTitle}
             />
         )
     })
@@ -143,6 +176,7 @@ function App() {
 
     return (
         <div className="App">
+            <AddItemForm addItem={addTodolist} />
             {todoListsItems}
         </div>
     );
